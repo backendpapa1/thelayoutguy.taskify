@@ -4,12 +4,10 @@ import { AuthController } from './auth.controller';
 import { BullModule } from '@nestjs/bullmq';
 
 @Module({
-  imports:[
-
+  imports: [
     BullModule.registerQueue({
       name: 'account',
-    });
-
+    }),
   ],
   controllers: [AuthController],
   providers: [AuthService],
