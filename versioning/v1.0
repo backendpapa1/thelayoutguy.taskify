@@ -1,0 +1,8 @@
+# V1.0
+
+Signup Flow
+- User enter email and password and name
+- Logic confirm email does not exist in a basic settings of a provider
+- Email is validated
+- Password is validated and hashed
+- User account is created and a queue processor is called to handle account setup.
