@@ -6,3 +6,19 @@ Signup Flow
 - Email is validated
 - Password is validated and hashed
 - User account is created and a queue processor is called to handle account setup.
+
+
+
+## Focus
+1. Confirm Bullmq is well setup
+2. Confirm entity id is well setup
+3. work on the signup endpoint. split logic across auth and user service.
+4. Implement queue to setup account. and ensure when it fails its retried -> Add to redis log that will be accessed via api and sse to monitor failure statistics on redis..we will setup a seperate queue that receives redis processing status and store them up
+
+
+
+
+Bullmq
+- events can be listened to
+- we can pause or resume queue from the dashboard
+- we can sandbox processes to ensure that when it crashes it does not affect main worker, run blocking codes without afecting quueue, use multicore better and reduces connection to redis
