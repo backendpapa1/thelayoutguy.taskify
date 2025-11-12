@@ -1,49 +1,86 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
+  ConflictException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { UserService } from 'src/user/user.service';
+import { HashService } from 'src/_services/security/hash.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+    private readonly hashService: HashService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    // retrieve Body
+  async signup(@Body() createAuthDto: CreateAuthDto) {
     const { name, password, email } = createAuthDto;
-    // confirm email exists
-    // validate email
-    // validate password and hash
-    // create user
-    // sent to queue to process account by creating workspace
-    return this.authService.create(createAuthDto);
-  }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
-  }
+    const isEmailExists = await this.userService.isEmailExisting(email);
+    if (isEmailExists)
+      throw new ConflictException(
+        'Failed to create account:User Already Exists',
+      );
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
-  }
+    const hash = await this.hashService.hashPassword(password);
+    if (!hash)
+      throw new InternalServerErrorException(
+        'Failed to create account:Could not hash password',
+      );
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
+    const payload = {
+      password: hash,
+      email: email,
+      name: name,
+      authMethods: [
+        {
+          providerId: email,
+          providerEmail: email,
+          providerPassword: hash,
+          type: 'EMAIL',
+        },
+      ],
+    };
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+    const createUser = await this.userService.create(payload);
+    if (!createUser)
+      throw new InternalServerErrorException(
+        'Failed to create account: Could not complete request',
+      );
+
+    const responsePayload = {
+      id: createUser.id,
+      email: () =>
+        createUser.authMethods.find((item) => item.type == 'EMAIL')
+          ?.providerEmail,
+    };
+
+    const accessToken = await this.jwtService.signAsync({
+      ...responsePayload,
+      type: 'access',
+    });
+
+    const refreshToken = await this.jwtService.signAsync(
+      {
+        ...responsePayload,
+        type: 'refresh',
+      },
+      { expiresIn: '7d' },
+    );
+
+    await this.authService.triggerAccountInitQueueSetup(createUser.id);
+    return {
+      user: responsePayload,
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
   }
 }

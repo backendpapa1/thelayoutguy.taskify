@@ -1,10 +1,12 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-interface IAuthMethod {
+
+export interface IAuthMethod {
   providerId?: string;
   providerEmail?: string;
   providerUsername?: string;
   providerPassword?: string;
+  type: /*'EMAIL' | 'GOOGLE' | 'X' | */ string;
 }
 
 @Entity()
@@ -21,9 +23,9 @@ export class User {
   @Column()
   email: string;
 
-  @Column('simple-array')
+  @Column('simple-json')
   isAccountSetup: { version: string; status: false };
 
-  @Column('simple-array')
-  authMethod: IAuthMethod[];
+  @Column('json')
+  authMethods: IAuthMethod[];
 }

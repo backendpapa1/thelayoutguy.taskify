@@ -11,8 +11,10 @@ export class UserService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto): Promise<User | null> {
+    const user = this.usersRepository.create(createUserDto);
+    const saveUser = await this.usersRepository.save(user);
+    return saveUser ?? null;
   }
 
   async isEmailExisting(email: string): Promise<boolean> {
