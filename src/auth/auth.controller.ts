@@ -10,6 +10,7 @@ import { CreateAuthDto } from './dto/create-auth.dto';
 import { UserService } from 'src/user/user.service';
 import { HashService } from 'src/_services/security/hash.service';
 import { JwtService } from '@nestjs/jwt';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -69,18 +70,46 @@ export class AuthController {
       type: 'access',
     });
 
-    const refreshToken = await this.jwtService.signAsync(
-      {
-        ...responsePayload,
-        type: 'refresh',
-      },
-      { expiresIn: '7d' },
+    return {
+      user: responsePayload,
+      access_token: accessToken,
+    };
+  }
+
+  @Post('/login')
+  async login(@Body() loginDto: LoginDto) {
+    const { email, password } = loginDto;
+    const user = await this.userService.findByEmail(email);
+    if (!user)
+      throw new ConflictException('Failed to login:Email does not exist.');
+    const findEmailProvider = user.authMethods.find(
+      (item) => item.type === 'EMAIL',
     );
+
+    if (!findEmailProvider)
+      throw new ConflictException('Failed to login:Login method not listed.');
+    const passwordHash = findEmailProvider?.providerPassword ?? '';
+    const isPasswordValid = await this.hashService.verifyHash(
+      passwordHash,
+      password,
+    );
+    if (!isPasswordValid)
+      throw new ConflictException('Failed to login: Password is incorrect!');
+
+    const responsePayload = {
+      id: user.id,
+      email: () =>
+        user.authMethods.find((item) => item.type == 'EMAIL')?.providerEmail,
+    };
+
+    const accessToken = await this.jwtService.signAsync({
+      ...responsePayload,
+      type: 'access',
+    });
 
     return {
       user: responsePayload,
       access_token: accessToken,
-      refresh_token: refreshToken,
     };
   }
 }

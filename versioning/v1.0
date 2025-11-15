@@ -22,3 +22,10 @@ Bullmq
 - events can be listened to
 - we can pause or resume queue from the dashboard
 - we can sandbox processes to ensure that when it crashes it does not affect main worker, run blocking codes without afecting quueue, use multicore better and reduces connection to redis
+
+
+### v1.0.1
+Goal: Ensure that private workspace is being created and isAccountSetup is set at true.
+
+- login
+- forgot password and reset password flow
