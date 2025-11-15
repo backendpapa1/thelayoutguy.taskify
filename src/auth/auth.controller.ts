@@ -20,7 +20,7 @@ export class AuthController {
     private readonly jwtService: JwtService,
   ) {}
 
-  @Post()
+  @Post('/signup')
   async signup(@Body() createAuthDto: CreateAuthDto) {
     const { name, password, email } = createAuthDto;
 
@@ -50,16 +50,17 @@ export class AuthController {
       ],
     };
 
-    const createUser = await this.userService.create(payload);
-    if (!createUser)
+    const createUser =
+      await this.authService.createUserAndPrivateWorkspaceTransaction(payload);
+    if (!createUser.user.id || !createUser.workspace.id)
       throw new InternalServerErrorException(
         'Failed to create account: Could not complete request',
       );
 
     const responsePayload = {
-      id: createUser.id,
+      id: createUser.user.id,
       email: () =>
-        createUser.authMethods.find((item) => item.type == 'EMAIL')
+        createUser.user.authMethods.find((item) => item.type == 'EMAIL')
           ?.providerEmail,
     };
 
@@ -76,7 +77,6 @@ export class AuthController {
       { expiresIn: '7d' },
     );
 
-    await this.authService.triggerAccountInitQueueSetup(createUser.id);
     return {
       user: responsePayload,
       access_token: accessToken,
