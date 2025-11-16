@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
+import { AuthGuard } from 'src/_services/guards/auth.guard';
+
 
 @Controller('workspace')
 export class WorkspaceController {
@@ -12,8 +23,9 @@ export class WorkspaceController {
     return this.workspaceService.create(createWorkspaceDto);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
-  findAll() {
+  GetMyWorkspace() {
     return this.workspaceService.findAll();
   }
 
@@ -23,7 +35,10 @@ export class WorkspaceController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWorkspaceDto: UpdateWorkspaceDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateWorkspaceDto: UpdateWorkspaceDto,
+  ) {
     return this.workspaceService.update(+id, updateWorkspaceDto);
   }
 

@@ -1,17 +1,17 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity } from 'src/_services/base/base.entity';
+import { Workspace } from 'src/workspace/entities/workspace.entity';
+import { Entity, Column, OneToMany } from 'typeorm';
 
-interface IAuthMethod {
+export interface IAuthMethod {
   providerId?: string;
   providerEmail?: string;
   providerUsername?: string;
   providerPassword?: string;
+  type: /*'EMAIL' | 'GOOGLE' | 'X' | */ string;
 }
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class User extends BaseEntity {
   @Column()
   name: string;
 
@@ -21,9 +21,12 @@ export class User {
   @Column()
   email: string;
 
-  @Column('simple-array')
-  isAccountSetup: { version: string; status: false };
+  @Column({ default: false })
+  isAccountSetup: boolean;
 
-  @Column('simple-array')
-  authMethod: IAuthMethod[];
+  @Column('json')
+  authMethods: IAuthMethod[];
+
+  @OneToMany(() => Workspace, (workspace) => workspace.owner)
+  workspaces: Workspace[];
 }

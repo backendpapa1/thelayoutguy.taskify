@@ -12,6 +12,10 @@ export class AccountConsumer extends WorkerHost {
       case 'account-setup': {
         return await Promise.resolve({});
       }
+      case 'create-private-workspace': {
+        console.log(job.data, 'job called');
+        return await Promise.resolve({});
+      }
     }
   }
 }

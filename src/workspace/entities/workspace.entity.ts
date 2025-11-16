@@ -1,10 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity } from 'src/_services/base/base.entity';
+import { User } from 'src/user/entities/user.entity';
+import { Entity, Column, ManyToOne } from 'typeorm';
 
 @Entity()
-export class Workspace {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class Workspace extends BaseEntity {
   @Column()
   workspaceName: string;
 
@@ -16,4 +15,7 @@ export class Workspace {
 
   @Column({ default: false })
   isPrivate: boolean;
+
+  @ManyToOne(() => User, (user) => user.id)
+  owner: User;
 }
