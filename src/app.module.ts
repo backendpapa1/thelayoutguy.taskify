@@ -10,6 +10,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import { User } from './user/entities/user.entity';
 import { Workspace } from './workspace/entities/workspace.entity';
 import { BullModule } from '@nestjs/bullmq';
+import { WorkspaceMember } from './workspace/entities/workspace-member.entity';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { BullModule } from '@nestjs/bullmq';
         username: config.get<string>('DB_USER'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
-        entities: [User, Workspace],
+        entities: [User, Workspace, WorkspaceMember],
         synchronize: false,
         autoLoadEntities: true,
         retryAttempts: 20,
