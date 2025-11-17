@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from 'src/user/user.module';
 import { WorkspaceMember } from './entities/workspace-member.entity';
+import { WorkspaceMemberService } from './workspace-member.service';
 
 @Module({
   imports: [
@@ -23,6 +24,6 @@ import { WorkspaceMember } from './entities/workspace-member.entity';
     UserModule,
   ],
   controllers: [WorkspaceController],
-  providers: [WorkspaceService],
+  providers: [WorkspaceService, WorkspaceMemberService],
 })
 export class WorkspaceModule {}

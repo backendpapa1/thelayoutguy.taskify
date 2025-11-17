@@ -23,6 +23,9 @@ export class Workspace extends BaseEntity {
   @ManyToOne(() => User, (user) => user.id)
   owner: User;
 
+  @Column({ nullable: true })
+  icon?: string;
+
   @Column({ default: 0, name: 'sortOrder' })
   sortOrder: number;
 
