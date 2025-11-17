@@ -6,10 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from 'src/user/user.module';
+import { WorkspaceMember } from './entities/workspace-member.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Workspace]),
+    TypeOrmModule.forFeature([Workspace, WorkspaceMember]),
     JwtModule.registerAsync({
       imports: [ConfigModule, UserModule],
       inject: [ConfigService],
@@ -19,6 +20,7 @@ import { UserModule } from 'src/user/user.module';
         signOptions: { expiresIn: '2d' },
       }),
     }),
+    UserModule,
   ],
   controllers: [WorkspaceController],
   providers: [WorkspaceService],
