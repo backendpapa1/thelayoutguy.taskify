@@ -12,10 +12,11 @@ import { WorkspaceModule } from 'src/workspace/workspace.module';
 import { User } from 'src/user/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Workspace } from 'src/workspace/entities/workspace.entity';
+import { WorkspaceMember } from '../workspace/entities/workspace-member.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Workspace]),
+    TypeOrmModule.forFeature([User, Workspace, WorkspaceMember]),
     UserModule,
     WorkspaceModule,
     BullModule.registerQueue({

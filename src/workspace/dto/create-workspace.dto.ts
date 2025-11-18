@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateWorkspaceDto {
   @IsString()
@@ -6,4 +6,8 @@ export class CreateWorkspaceDto {
 
   @IsString()
   workspaceDescription: string;
+
+  @IsOptional()
+  @IsString()
+  icon?: string;
 }

@@ -8,10 +8,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from 'src/user/user.module';
 import { WorkspaceMember } from './entities/workspace-member.entity';
 import { WorkspaceMemberService } from './workspace-member.service';
+import { User } from '../user/entities/user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Workspace, WorkspaceMember]),
+    TypeOrmModule.forFeature([Workspace, WorkspaceMember, User]),
     JwtModule.registerAsync({
       imports: [ConfigModule, UserModule],
       inject: [ConfigService],
@@ -25,5 +26,6 @@ import { WorkspaceMemberService } from './workspace-member.service';
   ],
   controllers: [WorkspaceController],
   providers: [WorkspaceService, WorkspaceMemberService],
+  exports:[WorkspaceService]
 })
 export class WorkspaceModule {}

@@ -11,6 +11,8 @@ import { User } from './user/entities/user.entity';
 import { Workspace } from './workspace/entities/workspace.entity';
 import { BullModule } from '@nestjs/bullmq';
 import { WorkspaceMember } from './workspace/entities/workspace-member.entity';
+import { WorkspaceListModule } from './workspace-list/workspace-list.module';
+import { WorkspaceListModule } from './workspace-list/workspace-list.module';
 
 @Module({
   imports: [
@@ -48,6 +50,7 @@ import { WorkspaceMember } from './workspace/entities/workspace-member.entity';
     AuthModule,
     UserModule,
     WorkspaceModule,
+    WorkspaceListModule,
   ],
   controllers: [AppController],
   providers: [AppService],
