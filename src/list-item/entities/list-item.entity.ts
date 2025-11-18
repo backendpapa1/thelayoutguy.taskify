@@ -20,8 +20,8 @@ export enum ListItemStatus {
 }
 
 @Entity()
-@Index(['list', 'position']) // For efficient ordering
-@Index(['list', 'status']) // For filtering by status
+@Index(['list', 'position'])
+@Index(['list', 'status'])
 export class ListItem extends BaseEntity {
   @Column()
   title: string;
@@ -36,7 +36,7 @@ export class ListItem extends BaseEntity {
   listId: string;
 
   @Column({ type: 'int', default: 0 })
-  position: number; // Position within the list
+  position: number; 
 
   @Column({
     type: 'enum',
@@ -52,7 +52,7 @@ export class ListItem extends BaseEntity {
   })
   status: ListItemStatus;
 
-  // Assignees - multiple users can be assigned to a card
+  
   @ManyToMany(() => User)
   @JoinTable({
     name: 'list_item_assignees',
@@ -67,49 +67,41 @@ export class ListItem extends BaseEntity {
   @Column()
   createdById: string;
 
-  // Due date
   @Column({ type: 'timestamp', nullable: true })
   dueDate?: Date;
 
   @Column({ default: false })
   isOverdue: boolean;
 
-  // Labels/Tags (stored as array of strings)
   @Column({ type: 'simple-array', nullable: true })
   labels?: string[];
 
-  // Cover image
   @Column({ nullable: true })
   coverImage?: string;
 
-  // Checklist progress
   @Column({ type: 'int', default: 0 })
   checklistItemsTotal: number;
 
   @Column({ type: 'int', default: 0 })
   checklistItemsCompleted: number;
 
-  // Comments count
   @Column({ type: 'int', default: 0 })
   commentsCount: number;
 
-  // Attachments count
   @Column({ type: 'int', default: 0 })
   attachmentsCount: number;
 
-  // Time tracking (in minutes)
   @Column({ type: 'int', default: 0 })
-  estimatedTime?: number; // Estimated time in minutes
+  estimatedTime?: number; 
 
   @Column({ type: 'int', default: 0 })
-  trackedTime: number; // Actual tracked time in minutes
+  trackedTime: number; 
 
-  // Pomodoro settings
   @Column({ type: 'int', default: 25 })
-  pomodoroWorkDuration: number; // Work duration in minutes
+  pomodoroWorkDuration: number;
 
   @Column({ type: 'int', default: 5 })
-  pomodoroBreakDuration: number; // Break duration in minutes
+  pomodoroBreakDuration: number; 
 
   @Column({ type: 'int', default: 0 })
   pomodoroCompletedSessions: number;
@@ -117,7 +109,6 @@ export class ListItem extends BaseEntity {
   @Column({ default: true })
   isActive: boolean;
 
-  // Archived at timestamp
   @Column({ type: 'timestamp', nullable: true })
   archivedAt?: Date;
 }
