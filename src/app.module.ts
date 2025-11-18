@@ -14,6 +14,13 @@ import { WorkspaceMember } from './workspace/entities/workspace-member.entity';
 import { WorkspaceListModule } from './workspace-list/workspace-list.module';
 import { WorkspaceList } from './workspace-list/entities/workspace-list.entity';
 import { ListItemModule } from './list-item/list-item.module';
+import { ListItem } from './list-item/entities/list-item.entity';
+import { ListItemComment } from './list-item/entities/list-item-comment.entity';
+import { ListItemAttachment } from './list-item/entities/list-item-attachment.entity';
+import { ListItemChecklist } from './list-item/entities/list-item-checklist.entity';
+import { ChecklistItem } from './list-item/entities/checklist-item.entity';
+import { ListItemActivity } from './list-item/entities/list-item-activity.entity';
+import { TimeLog } from './list-item/entities/time-log.entity';
 
 @Module({
   imports: [
@@ -30,7 +37,19 @@ import { ListItemModule } from './list-item/list-item.module';
         username: config.get<string>('DB_USER'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
-        entities: [User, Workspace, WorkspaceMember, WorkspaceList],
+        entities: [
+          User,
+          Workspace,
+          WorkspaceMember,
+          WorkspaceList,
+          ListItem,
+          ListItemComment,
+          ListItemAttachment,
+          ListItemChecklist,
+          ChecklistItem,
+          ListItemActivity,
+          TimeLog,
+        ],
         synchronize: false,
         autoLoadEntities: true,
         retryAttempts: 20,
