@@ -362,4 +362,31 @@ export class WorkspaceService {
     };
   }
 
+  async verifyWorkspaceMembership(
+    userId: string,
+    workspaceId: string,
+  ): Promise<WorkspaceMember> {
+    const member = await this.workspaceMemberRepository.findOne({
+      where: {
+        workspaceId,
+        userId,
+        status: WorkspaceMemberStatus.ACTIVE,
+      },
+    });
+
+    if (!member) {
+      throw new ForbiddenException('You are not a member of this workspace');
+    }
+
+    return member;
+  }
+
+  
+  verifyWritePermission(member: WorkspaceMember) {
+    if (member.role === WorkspaceMemberRole.GUEST) {
+      throw new ForbiddenException('Guests cannot modify workspace lists');
+    }
+  }
+
+
 }
