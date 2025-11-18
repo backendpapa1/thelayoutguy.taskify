@@ -17,8 +17,6 @@ export class WorkspaceListService {
     private workspaceListRepository: Repository<WorkspaceList>,
     @InjectRepository(Workspace)
     private workspaceRepository: Repository<Workspace>,
-    @InjectRepository(WorkspaceMember)
-    private workspaceMemberRepository: Repository<WorkspaceMember>,
     private readonly workspaceService: WorkspaceService,
     // private dataSource: DataSource,
 
@@ -241,5 +239,70 @@ export class WorkspaceListService {
     };
   }
 
+  async toggleListArchive(userId: string, listId: string) {
+    const list = await this.workspaceListRepository.findOne({
+      where: { id: listId },
+    });
+
+    if (!list) {
+      throw new NotFoundException('List not found');
+    }
+
+    const member = await this.workspaceService.verifyWorkspaceMembership(userId, list.workspaceId);
+    this.workspaceService.verifyWritePermission(member);
+
+    list.isActive = !list.isActive;
+    await this.workspaceListRepository.save(list);
+
+    return {
+      message: list.isActive ? 'List restored successfully' : 'List archived successfully',
+      list: {
+        id: list.id,
+        isActive: list.isActive,
+      },
+    };
+  }
+
+  async duplicateList(userId: string, listId: string) {
+    const originalList = await this.workspaceListRepository.findOne({
+      where: { id: listId },
+    });
+
+    if (!originalList) {
+      throw new NotFoundException('List not found');
+    }
+
+    const member = await this.workspaceService.verifyWorkspaceMembership(
+      userId,
+      originalList.workspaceId,
+    );
+    this.workspaceService.verifyWritePermission(member);
+
+    const lastList = await this.workspaceListRepository.findOne({
+      where: { workspaceId: originalList.workspaceId },
+      order: { position: 'DESC' },
+    });
+
+    const nextPosition = lastList ? lastList.position + 1 : 0;
+
+    const duplicateList = this.workspaceListRepository.create({
+      title: `${originalList.title} (Copy)`,
+      description: originalList.description,
+      color: originalList.color,
+      workspaceId: originalList.workspaceId,
+      position: nextPosition,
+      createdById: userId,
+    });
+
+    const savedList = await this.workspaceListRepository.save(duplicateList);
+
+    delete (savedList as Partial<WorkspaceList>).workspace;
+    delete (savedList as Partial<WorkspaceList>).createdBy;
+
+    return {
+      message: 'List duplicated successfully',
+      list: savedList,
+    };
+  }
 
 }

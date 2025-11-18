@@ -12,7 +12,8 @@ import { Workspace } from './workspace/entities/workspace.entity';
 import { BullModule } from '@nestjs/bullmq';
 import { WorkspaceMember } from './workspace/entities/workspace-member.entity';
 import { WorkspaceListModule } from './workspace-list/workspace-list.module';
-import { WorkspaceListModule } from './workspace-list/workspace-list.module';
+import { WorkspaceList } from './workspace-list/entities/workspace-list.entity';
+import { ListItemModule } from './list-item/list-item.module';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { WorkspaceListModule } from './workspace-list/workspace-list.module';
         username: config.get<string>('DB_USER'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
-        entities: [User, Workspace, WorkspaceMember],
+        entities: [User, Workspace, WorkspaceMember, WorkspaceList],
         synchronize: false,
         autoLoadEntities: true,
         retryAttempts: 20,
@@ -51,6 +52,7 @@ import { WorkspaceListModule } from './workspace-list/workspace-list.module';
     UserModule,
     WorkspaceModule,
     WorkspaceListModule,
+    ListItemModule,
   ],
   controllers: [AppController],
   providers: [AppService],

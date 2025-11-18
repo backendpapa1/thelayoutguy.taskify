@@ -14,7 +14,7 @@ import { User } from '../user/entities/user.entity';
   imports: [
     TypeOrmModule.forFeature([Workspace, WorkspaceMember, User]),
     JwtModule.registerAsync({
-      imports: [ConfigModule, UserModule],
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         global: true,
